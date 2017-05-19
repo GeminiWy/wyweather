@@ -1,6 +1,6 @@
 <litepal>
-    <abname value = "my_weather"/>
-    <version value = "1"/>
+    <dbname value="my_weather"/>
+    <version value="1"/>
     <list>
         <mapping class = "com.example.wangyao.myweather.db.Province"/>
         <mapping class = "com.example.wangyao.myweather.db.City"/>
