@@ -4,7 +4,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 /**
- * 攻击类
+ * 工具类
  * 利用okhttp发送网络请求
  * Created by wangyao on 2017/5/17.
  */

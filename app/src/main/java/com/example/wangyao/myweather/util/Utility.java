@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.example.wangyao.myweather.db.City;
 import com.example.wangyao.myweather.db.County;
 import com.example.wangyao.myweather.db.Province;
+import com.example.wangyao.myweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,5 +83,24 @@ public class Utility {
 
         }
         return false;
+    }
+
+    public static Weather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);//将返回的json形式数据生成一个json对象
+
+            //将json对象里的"HeWeather"的数组生成数组对象（一个HeWeather里包含很多个status，basic，aqi……）
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+
+            //取出HeWeather数组里的第一个status，basic，aqi，now，suggestion，daily_forecast,并转换成字符串
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+
+            //fromJson需要的是字符串数据,将之解析成实体对象(即:将数据一一传入Weather类中，转换成Weather对象)
+            return new Gson().fromJson(weatherContent,Weather.class);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

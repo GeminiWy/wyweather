@@ -1,6 +1,7 @@
 package com.example.wangyao.myweather;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,7 +34,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 /**
- *
+ *碎片，用来遍历省市县三层列表
  * Created by wangyao on 2017/5/17.
  */
 
@@ -54,6 +55,13 @@ public class ChooseAreaFragment extends Fragment {
     private List<County> countyList;
     private ProgressDialog progressDialog;
 
+    /**
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,6 +75,10 @@ public class ChooseAreaFragment extends Fragment {
         return view;
     }
 
+    /**
+     * 在此设置各种点击事件
+     * @param savedInstanceState
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -87,9 +99,22 @@ public class ChooseAreaFragment extends Fragment {
                      * 选中的是city等级则将counties数据加载出来，并将点击哪个city放入到selectedCity中
                      */
 
-                }else if (currentLevel ==LEVEL_CITY){
+                }else if (currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if (currentLevel == LEVEL_COUNTY){
+                    String weatherId = countyList.get(position).getWeatherId();
+                    if (getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if (getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
                 }
             }
         });
@@ -153,6 +178,9 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
+    /**
+     * 加载county页面
+     */
     private void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
@@ -195,7 +223,7 @@ public class ChooseAreaFragment extends Fragment {
             }
 
             /**
-             * 成功时的回调
+             * 成功时的回调，将服务器返回的数据解析后传入数据库供queryprovince等加载方法调用
              * @param call
              * @param response
              * @throws IOException
